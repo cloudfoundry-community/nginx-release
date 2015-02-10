@@ -1,0 +1,11 @@
+# abort script on any command that exits with a non zero value
+set -e
+
+apt-get install libpcre3 libpcre3-dev
+curl -OL http://nginx.org/download/nginx-1.6.2.tar.gz
+tar xvzf nginx-1.6.2.tar.gz
+cd nginx-1.6.2
+
+./configure --prefix=${BOSH_INSTALL_TARGET}
+make
+make install

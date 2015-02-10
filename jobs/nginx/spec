@@ -1,0 +1,12 @@
+---
+name: nginx
+templates:
+    ctl.sh: bin/ctl
+    nginx.conf.erb: etc/nginx.conf
+
+packages:
+- nginx-1.6.2
+
+properties:
+  config_file:
+    description: 'The contents of nginx.conf'
