@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+URL=<%= p('url') %>
+OUTPUT_PATH=<%= p('output_path') %>
+
+mkdir -p `dirname $OUTPUT_PATH`
+
+while true
+do
+  echo "`date` Fetching $URL to $OUTPUT_PATH"
+  curl --silent --show-error --output $OUTPUT_PATH.tmp $URL
+  mv $OUTPUT_PATH.tmp $OUTPUT_PATH
+  sleep <%= p('sleep') %>
+done

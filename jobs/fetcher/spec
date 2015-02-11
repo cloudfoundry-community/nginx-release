@@ -1,0 +1,16 @@
+---
+name: fetcher
+templates:
+  ctl.sh: bin/ctl
+  fetcher.sh.erb: bin/fetcher.sh
+
+packages:
+
+properties:
+  url:
+    description: 'The URL to fetch'
+  output_path:
+    description: 'The path to output the static file'
+  sleep:
+    default: 10
+    description: 'The time until the next retrieval (in seconds)'
