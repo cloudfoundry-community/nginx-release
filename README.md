@@ -1,15 +1,15 @@
-# BOSH-deployed ISC DHCP Server
+# BOSH-deployed Nginx Server
 
-This BOSH release can be used to deploy a DHCP server.
+This BOSH release can be used to deploy a Nginx server.
 
 ### Procedure
 
 ```
-git clone git@github.com:pivotal-cf-experimental/nginx-server-release.git
-cd nginx-server-release
+git clone git@github.com:pivotal-cf-experimental/nginx-bosh-release.git
+cd nginx-bosh-release
 bosh create release
 bosh upload release 
-bosh deployment your-manifest-dhcpd.yml
+bosh deployment your-manifest-nginx.yml
 bosh deploy
 ```
 
