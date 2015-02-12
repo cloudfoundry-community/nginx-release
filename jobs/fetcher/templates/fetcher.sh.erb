@@ -2,8 +2,8 @@
 
 set -e
 
-URL=<%= p('url') %>
-OUTPUT_PATH=<%= p('output_path') %>
+URL=<%= p('fetcher.url') %>
+OUTPUT_PATH=<%= p('fetcher.output_path') %>
 
 mkdir -p `dirname $OUTPUT_PATH`
 
@@ -12,5 +12,5 @@ do
   echo "`date` Fetching $URL to $OUTPUT_PATH"
   curl --silent --show-error --output $OUTPUT_PATH.tmp $URL
   mv $OUTPUT_PATH.tmp $OUTPUT_PATH
-  sleep <%= p('sleep') %>
+  sleep <%= p('fetcher.sleep') %>
 done

@@ -7,10 +7,10 @@ templates:
 packages:
 
 properties:
-  url:
+  fetcher.url:
     description: 'The URL to fetch'
-  output_path:
+  fetcher.output_path:
     description: 'The path to output the static file'
-  sleep:
+  fetcher.sleep:
     default: 10
     description: 'The time until the next retrieval (in seconds)'
