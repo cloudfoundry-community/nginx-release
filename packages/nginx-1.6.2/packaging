@@ -6,6 +6,6 @@ curl -OL http://nginx.org/download/nginx-1.6.2.tar.gz
 tar xvzf nginx-1.6.2.tar.gz
 cd nginx-1.6.2
 
-./configure --prefix=${BOSH_INSTALL_TARGET}
+./configure --prefix=${BOSH_INSTALL_TARGET} --with-http_ssl_module
 make
 make install
