@@ -3,6 +3,8 @@ name: nginx
 templates:
     ctl.sh: bin/ctl
     nginx.conf.erb: etc/nginx.conf
+    ssl_key.erb: etc/ssl.key.pem
+    ssl_chained_cert.erb: etc/ssl_chained.crt.pem
 
 packages:
 - nginx-1.6.2
@@ -10,3 +12,15 @@ packages:
 properties:
   config_file:
     description: 'The contents of nginx.conf'
+  ssl_key:
+    description: 'The SSL key; can be empty; should be in PEM format'
+  ssl_chained_cert: |
+    This is the chained SSL certificate for the website; This is in PEM format.
+    The topmost certificate should be the certificate for the website itself.
+    (e.g. in the case of sslip.io, the certificate for sslip.io). The
+    second-from-top certificate should be the intermediate certificate (e.g.
+    "COMODO RSA Domain Validation Secure Server CA"). If there is another
+    intermediate certificate, that should follow (e.g. "COMODO RSA
+    Certification Authority").  There is no reason to include the root
+    certificate, but there's no harm in including it either. It should be the
+    last certificate (bottom-most).
