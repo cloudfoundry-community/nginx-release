@@ -17,6 +17,16 @@ bosh deploy
 
 A sample manifest is available in the `examples` subdirectory.
 
+### Jobs
+
+There are two jobs:
+
+* nginx: runs the nginx server
+* fetcher: periodically fetches [computationally] expensive pages for the nginx
+  server to server as static pages. Discussion of this job is beyond the scope
+  of this document and it can be safely ignored (i.e. you don't need to instantiate
+  the job in the BOSH manifest).
+
 ### Caveats
 
 We've only tested on AWS; only works with Ubuntu stemcell (uses `apt-get` to install PCRE pre-requisite).
