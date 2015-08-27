@@ -1,0 +1,24 @@
+---
+packages:
+- name: nginx-1.6.2
+  version: 04593454a1fe958c4f523ae266dfdbb433eccf6d
+  fingerprint: 04593454a1fe958c4f523ae266dfdbb433eccf6d
+  sha1: 779276c6c68e2b7f75f95d6d76d20fc0c0a8c7cc
+  dependencies: []
+jobs:
+- name: fetcher
+  version: b1088baa152e8adfcb3b0301f95002a2dbec2dce
+  fingerprint: b1088baa152e8adfcb3b0301f95002a2dbec2dce
+  sha1: e1e138939676021084b8afb0355dcba7eab62fa2
+- name: nginx
+  version: 5de535880ac2ee95d7f953922e24ad59b5568391
+  fingerprint: 5de535880ac2ee95d7f953922e24ad59b5568391
+  sha1: 6e00a6304a069af5d3c60a5daa78d923064bf0e4
+license:
+  version: a3e6d245553160dad1d273d363550134abc94578
+  fingerprint: a3e6d245553160dad1d273d363550134abc94578
+  sha1: f1dc0d2844fd57b07f4395aef02070e44acd3e67
+commit_hash: 1755ec16
+uncommitted_changes: true
+name: nginx
+version: '1'
