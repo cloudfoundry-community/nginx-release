@@ -1,4 +1,4 @@
-# BOSH-deployed Nginx Server
+# BOSH-deployed nginx Server
 
 This BOSH release can be used to deploy an nginx server.
 
@@ -42,7 +42,18 @@ jobs:
       }
 ```
 
+If you have an existing manifest and you want to add nginx to it, make sure to include the nginx final release tarball:
+
+```yaml
+releases:
+  - name: nginx
+    url: https://s3.amazonaws.com//nginx-release/nginx-2.tgz
+    sha1: 667cc1a0f9117bdb4b217ee2b76dc20e61371c02
+```
+
 ### Deploy
+
+Deploy the release to AWS:
 
 ```bash
 bosh-init deploy ~/nginx-aws.yml
