@@ -1,0 +1,272 @@
+---
+name: nginx
+
+resource_pools:
+- name: nginx_pool
+  network: default
+  cloud_properties:
+    instance_type: t2.micro
+    ephemeral_disk:
+      size: 4000
+      type: gp2
+    availability_zone: us-east-1a
+  stemcell:
+    url: https://bosh.io/d/stemcells/bosh-aws-xen-hvm-centos-7-go_agent?v=3058
+    sha1: 757c23269dfb1f2706e39d696ea06aa6c4e9ef38
+
+jobs:
+- name: nginx
+  instances: 1
+  templates:
+  - { release: nginx, name: nginx }
+  resource_pool: nginx_pool
+  networks:
+  - name: vip
+    # CHANGEME: replace the IP address with your Elastic IP
+    # the Elastic IP must have scope 'vpc' not 'standard'
+    static_ips: [52.0.76.229]
+  - name: default
+  properties:
+    nginx_conf: |
+      worker_processes  1;
+      error_log /var/vcap/sys/log/nginx/error.log   info;
+      #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
+      events {
+        worker_connections  1024;
+      }
+      http {
+        include /var/vcap/packages/nginx-1.6.2/conf/mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        server_names_hash_bucket_size 64;
+        # redirect HTTP to HTTPS
+        server {
+          server_name _; # invalid value which will never trigger on a real hostname.
+          listen 80;
+          rewrite ^ https://sslip.io$request_uri?;
+          access_log /var/vcap/sys/log/nginx/sslip.io-access.log;
+          error_log /var/vcap/sys/log/nginx/sslip.io-error.log;
+        }
+        server {
+          server_name sslip.io 52-0-76-229.sslip.io;
+          listen              443 ssl;
+          ssl_certificate     /var/vcap/jobs/nginx/etc/ssl_chained.crt.pem;
+          ssl_certificate_key /var/vcap/jobs/nginx/etc/ssl.key.pem;
+          access_log /var/vcap/sys/log/nginx/sslip.io-access.log;
+          error_log /var/vcap/sys/log/nginx/sslip.io-error.log;
+          root /var/vcap/jobs/nginx/document_root;
+          index index.shtml index.html index.htm;
+        }
+      }
+    ssl_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+    ssl_chained_cert: |
+      -----BEGIN CERTIFICATE-----
+      MIIGSjCCBTKgAwIBAgIRAOxg+vyhygau6bc2SAooL6owDQYJKoZIhvcNAQELBQAw
+      gZAxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
+      BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMTYwNAYD
+      VQQDEy1DT01PRE8gUlNBIERvbWFpbiBWYWxpZGF0aW9uIFNlY3VyZSBTZXJ2ZXIg
+      Q0EwHhcNMTUwODIwMDAwMDAwWhcNMTgwODE5MjM1OTU5WjBbMSEwHwYDVQQLExhE
+      b21haW4gQ29udHJvbCBWYWxpZGF0ZWQxITAfBgNVBAsTGFBvc2l0aXZlU1NMIE11
+      bHRpLURvbWFpbjETMBEGA1UEAwwKKi5zc2xpcC5pbzCCAiIwDQYJKoZIhvcNAQEB
+      BQADggIPADCCAgoCggIBAMr+Ip+rHDMNzpAZa/vtTqKC7mUCn7ZsBiDvKbjo+pUh
+      +B9SyBiU2PHqGen+0ddfc8ij4BsgpVkhVI5lzSElWQAkHGMMfndfW1GEPcJnM7aX
+      MijBJG4RScvYRr0B5E0LmxrjVdBTK4N+koI/glATinecATUWB+oa/ZgdChbiD28K
+      PJFcJhKhi6BmHslg3qW9uoABcIOoAPtgx6lcsJny12r/RD1ai+XhMc+58DM2qXpX
+      o41ocFyII0TFuau0jNI66ov4enEMzoOWNjxJdWyz8PGzeRQzSblp4cECxetTNU4M
+      ZNIxa67gdvPqFJBxd14FFYRxPIrrSikh+Xev7ZYaQ1LWbLkUkyKZ85ncaLlKaPf9
+      lPyfQ+fuWtGdmCB8dEYeS3Q5nIRjdLNnYpsJ3GRKrwdjQNWJjPXiAn3a7J/Fg4tU
+      BmmFfgkmpCNBGtsD+WC7HoCV5fl2oGgeNeU2u0Zz+vfKhqaumO1Ydvpf82RLnx1U
+      bsNA8a91rYBeyRsX2MzmJW95oiPORfIdio5ISIyuOals29IB4CuPZtL9AUyxEPJB
+      PFM0x0nwU9OrSzDpwR1HlHrQcYmpE3SVOC+Mv4aVZj5EkjrPWwRX0ZNC8W4Sw1bl
+      12rQGzy7gTeWTI2DGW7UQMncuV7t+i7/rzqJbCEVEgtXmoiiq8GvVECxhdakJwqN
+      AgMBAAGjggHRMIIBzTAfBgNVHSMEGDAWgBSQr2o6lFoL2JDqElZz30O0Oija5zAd
+      BgNVHQ4EFgQUy14Sc1np6R2dMwmH2E7Hx7g0fKAwDgYDVR0PAQH/BAQDAgWgMAwG
+      A1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCME8GA1Ud
+      IARIMEYwOgYLKwYBBAGyMQECAgcwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1
+      cmUuY29tb2RvLmNvbS9DUFMwCAYGZ4EMAQIBMFQGA1UdHwRNMEswSaBHoEWGQ2h0
+      dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQURvbWFpblZhbGlkYXRpb25T
+      ZWN1cmVTZXJ2ZXJDQS5jcmwwgYUGCCsGAQUFBwEBBHkwdzBPBggrBgEFBQcwAoZD
+      aHR0cDovL2NydC5jb21vZG9jYS5jb20vQ09NT0RPUlNBRG9tYWluVmFsaWRhdGlv
+      blNlY3VyZVNlcnZlckNBLmNydDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29t
+      b2RvY2EuY29tMB8GA1UdEQQYMBaCCiouc3NsaXAuaW+CCHNzbGlwLmlvMA0GCSqG
+      SIb3DQEBCwUAA4IBAQAlUIfHpz1LGi5JrkN42cowukjpWB6cCYp9AaC/2Vfm66cV
+      GDM1KeohNpyV+cjmOuG5ITknr1lyMaqG2kpA7JY4hSAUd1WkU6BwrfwKV++wjJGU
+      Jbwl5MIrMUcYGchwxQkjqtDT/MkTKYaFiqzYxtQIb0U1EHNhoEE6ZcLum4J7DBq2
+      a57WYWeu9snz0tnV2fJdApBJLfoGTzmTN0Jhp8XKhJ73YNtPoU0o2rNHBFYYwqQK
+      U+rpjxMwBx70Wgbg49mv4noqKLfSeXeMfLfaN/87B6bCxhVmq/mNuRdPWzDKyyMU
+      nKOOhqezZnqKwlwIl1/MU8w8lIo9kQip+ZYe/Cqr
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIGCDCCA/CgAwIBAgIQKy5u6tl1NmwUim7bo3yMBzANBgkqhkiG9w0BAQwFADCB
+      hTELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4G
+      A1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxKzApBgNV
+      BAMTIkNPTU9ETyBSU0EgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTQwMjEy
+      MDAwMDAwWhcNMjkwMjExMjM1OTU5WjCBkDELMAkGA1UEBhMCR0IxGzAZBgNVBAgT
+      EkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMR
+      Q09NT0RPIENBIExpbWl0ZWQxNjA0BgNVBAMTLUNPTU9ETyBSU0EgRG9tYWluIFZh
+      bGlkYXRpb24gU2VjdXJlIFNlcnZlciBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP
+      ADCCAQoCggEBAI7CAhnhoFmk6zg1jSz9AdDTScBkxwtiBUUWOqigwAwCfx3M28Sh
+      bXcDow+G+eMGnD4LgYqbSRutA776S9uMIO3Vzl5ljj4Nr0zCsLdFXlIvNN5IJGS0
+      Qa4Al/e+Z96e0HqnU4A7fK31llVvl0cKfIWLIpeNs4TgllfQcBhglo/uLQeTnaG6
+      ytHNe+nEKpooIZFNb5JPJaXyejXdJtxGpdCsWTWM/06RQ1A/WZMebFEh7lgUq/51
+      UHg+TLAchhP6a5i84DuUHoVS3AOTJBhuyydRReZw3iVDpA3hSqXttn7IzW3uLh0n
+      c13cRTCAquOyQQuvvUSH2rnlG51/ruWFgqUCAwEAAaOCAWUwggFhMB8GA1UdIwQY
+      MBaAFLuvfgI9+qbxPISOre44mOzZMjLUMB0GA1UdDgQWBBSQr2o6lFoL2JDqElZz
+      30O0Oija5zAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNV
+      HSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwGwYDVR0gBBQwEjAGBgRVHSAAMAgG
+      BmeBDAECATBMBgNVHR8ERTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNv
+      bS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9uQXV0aG9yaXR5LmNybDBxBggrBgEFBQcB
+      AQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9E
+      T1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21v
+      ZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAE4rdk+SHGI2ibp3wScF9BzWRJ2p
+      mj6q1WZmAT7qSeaiNbz69t2Vjpk1mA42GHWx3d1Qcnyu3HeIzg/3kCDKo2cuH1Z/
+      e+FE6kKVxF0NAVBGFfKBiVlsit2M8RKhjTpCipj4SzR7JzsItG8kO3KdY3RYPBps
+      P0/HEZrIqPW1N+8QRcZs2eBelSaz662jue5/DJpmNXMyYE7l3YphLG5SEXdoltMY
+      dVEVABt0iN3hxzgEQyjpFv3ZBdRdRydg1vs4O2xyopT4Qhrf7W8GjEXCBgCq5Ojc
+      2bXhc3js9iPc0d1sjhqPpepUfJa3w/5Vjo1JXvxku88+vZbrac2/4EjxYoIQ5QxG
+      V/Iz2tDIY+3GH5QFlkoakdH368+PUq4NCNk+qKBR6cGHdNXJ93SrLlP7u3r7l+L4
+      HyaPs9Kg4DdbKDsx5Q5XLVq4rXmsXiBmGqW5prU5wfWYQ//u+aen/e7KJD2AFsQX
+      j4rBYKEMrltDR5FL1ZoXX/nUh8HCjLfn4g8wGTeGrODcQgPmlKidrv0PJFGUzpII
+      0fxQ8ANAe4hZ7Q7drNJ3gjTcBpUC2JD5Leo31Rpg0Gcg19hCC0Wvgmje3WYkN5Ap
+      lBlGGSW4gNfL1IYoakRwJiNiqZ+Gb7+6kHDSVneFeO/qJakXzlByjAA6quPbYzSf
+      +AZxAeKCINT+b72x
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFdDCCBFygAwIBAgIQJ2buVutJ846r13Ci/ITeIjANBgkqhkiG9w0BAQwFADBv
+      MQswCQYDVQQGEwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFk
+      ZFRydXN0IEV4dGVybmFsIFRUUCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBF
+      eHRlcm5hbCBDQSBSb290MB4XDTAwMDUzMDEwNDgzOFoXDTIwMDUzMDEwNDgzOFow
+      gYUxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
+      BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYD
+      VQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIICIjANBgkq
+      hkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkehUktIKVrGsDSTdxc9EZ3SZKzejfSNw
+      AHG8U9/E+ioSj0t/EFa9n3Byt2F/yUsPF6c947AEYe7/EZfH9IY+Cvo+XPmT5jR6
+      2RRr55yzhaCCenavcZDX7P0N+pxs+t+wgvQUfvm+xKYvT3+Zf7X8Z0NyvQwA1onr
+      ayzT7Y+YHBSrfuXjbvzYqOSSJNpDa2K4Vf3qwbxstovzDo2a5JtsaZn4eEgwRdWt
+      4Q08RWD8MpZRJ7xnw8outmvqRsfHIKCxH2XeSAi6pE6p8oNGN4Tr6MyBSENnTnIq
+      m1y9TBsoilwie7SrmNnu4FGDwwlGTm0+mfqVF9p8M1dBPI1R7Qu2XK8sYxrfV8g/
+      vOldxJuvRZnio1oktLqpVj3Pb6r/SVi+8Kj/9Lit6Tf7urj0Czr56ENCHonYhMsT
+      8dm74YlguIwoVqwUHZwK53Hrzw7dPamWoUi9PPevtQ0iTMARgexWO/bTouJbt7IE
+      IlKVgJNp6I5MZfGRAy1wdALqi2cVKWlSArvX31BqVUa/oKMoYX9w0MOiqiwhqkfO
+      KJwGRXa/ghgntNWutMtQ5mv0TIZxMOmm3xaG4Nj/QN370EKIf6MzOi5cHkERgWPO
+      GHFrK+ymircxXDpqR+DDeVnWIBqv8mqYqnK8V0rSS527EPywTEHl7R09XiidnMy/
+      s1Hap0flhFMCAwEAAaOB9DCB8TAfBgNVHSMEGDAWgBStvZh6NLQm9/rEJlTvA73g
+      JMtUGjAdBgNVHQ4EFgQUu69+Aj36pvE8hI6t7jiY7NkyMtQwDgYDVR0PAQH/BAQD
+      AgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAGBgRVHSAAMEQGA1UdHwQ9
+      MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4dGVy
+      bmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6
+      Ly9vY3NwLnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQEMBQADggEBAGS/g/FfmoXQ
+      zbihKVcN6Fr30ek+8nYEbvFScLsePP9NDXRqzIGCJdPDoCpdTPW6i6FtxFQJdcfj
+      Jw5dhHk3QBN39bSsHNA7qxcS1u80GH4r6XnTq1dFDK8o+tDb5VCViLvfhVdpfZLY
+      Uspzgb8c8+a4bmYRBbMelC1/kZWSWfFMzqORcUx8Rww7Cxn2obFshj5cqsQugsv5
+      B5a6SE2Q8pTIqXOi6wZ7I53eovNNVZ96YUWYGGjHXkBrI/V5eu+MtWuLt29G9Hvx
+      PUsE2JOAWVrgQSQdso8VYFhH2+9uRv0V9dlfmrPb2LjkQLPNlzmuhbsdjrzch5vR
+      pu/xO28QOG8=
+      -----END CERTIFICATE-----
+
+networks:
+- name: default
+  type: dynamic
+  cloud_properties:
+    # CHANGEME: replace the subnet with your subnet-id
+    subnet: subnet-1c90ef6b
+- name: vip
+  type: vip
+
+cloud_provider:
+  template: {name: cpi, release: bosh-aws-cpi}
+
+  ssh_tunnel:
+    # CHANGEME: replace the IP address with your Elastic IP
+    host: 52.0.76.229
+    port: 22
+    user: vcap
+    # CHANGEME: replace with the pathname of your downloaded AWS Key Pair
+    # (Power users: no passphrase-protection otherwise you'll see a
+    # `asn1: structure error: tags don't match` message when deploying
+    private_key: /Users/cunnie/.ssh/aws_nono.pem
+
+  # CHANGEME: replace 'dmitriy' with a secure password
+  mbus: https://nats:dmitriy@52.0.76.229:6868
+
+  properties:
+    aws:
+      # CHANGEME: replace with your AWS Access Key
+      access_key_id: AKIAxxxxxxxxxxxxxxxx
+      # CHANGEME: replace with your AWS Secret
+      secret_access_key: 0+B1XW6xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      # CHANGEME: replace with your AWS Key Pair name
+      default_key_name: aws_nono
+      # CHANGEME: replace with your security group
+      # the Security Group MUST have the VPC ID of your VPC (e.g. 'vpc-e4250881')
+      default_security_groups: [no-filter-vpc]
+      region: us-east-1
+
+    # CHANGEME: replace 'dmitriy' with a secure password
+    agent: {mbus: "https://nats:dmitriy@0.0.0.0:6868"}
+
+    blobstore:
+      provider: local
+      path: /var/vcap/micro_bosh/data/cache
+
+    ntp: [0.north-america.pool.ntp.org]
+
+releases:
+  - name: nginx
+    url: https://s3.amazonaws.com//nginx-release/nginx-1.tgz
+    sha1: e6b3186c0fb3bf7780eccc8d47dba38799d8d108
+  - name: bosh-aws-cpi
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-aws-cpi-release?v=28
+    sha1: c7ce03393ebedd87a860dc609758ddb9654360fa
