@@ -13,8 +13,10 @@ properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
   ssl_key:
+    default: ''
     description: 'The SSL key; can be empty; should be in PEM format'
   ssl_chained_cert:
+    default: ''
     description: |
       This is the chained SSL certificate for the website; This is in PEM
       format.  The topmost certificate should be the certificate for the
