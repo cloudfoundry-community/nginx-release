@@ -265,8 +265,8 @@ cloud_provider:
 
 releases:
   - name: nginx
-    url: https://s3.amazonaws.com//nginx-release/nginx-1.tgz
-    sha1: e6b3186c0fb3bf7780eccc8d47dba38799d8d108
+    url: https://s3.amazonaws.com//nginx-release/nginx-2.tgz
+    sha1: 667cc1a0f9117bdb4b217ee2b76dc20e61371c02
   - name: bosh-aws-cpi
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-aws-cpi-release?v=28
     sha1: c7ce03393ebedd87a860dc609758ddb9654360fa
