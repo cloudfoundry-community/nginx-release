@@ -1,19 +1,52 @@
 # BOSH-deployed Nginx Server
 
-This BOSH release can be used to deploy a Nginx server.
+This BOSH release can be used to deploy an nginx server.
 
 ### Procedure for creating the BOSH manifest
 
-Create the BOSH manifest. Include the following
+Copy a manifest from the examples subdirectory. If you're not using SSL, copy *nginx-aws.yml*. If you're using SSL, copy *nginx-ssl-aws.yml*.
 
+```bash
+cp examples/nginx-aws.yml ~
 ```
+Edit your BOSH manifest. Search for occurrences of "CHANGEME" and substitute your values as appropriate.
+
+```bash
+vim ~/nginx-aws.yml
+```
+
+While editing, remember to populate the *nginx* job's configuration (i.e. `nginx.conf`). For example,
+
+```yaml
+jobs:
+- name: nginx
+  properties:
+    nginx_conf: |
+      worker_processes  1;
+      error_log /var/vcap/sys/log/nginx/error.log   info;
+      #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
+      events {
+        worker_connections  1024;
+      }
+      http {
+        include /var/vcap/packages/nginx-1.6.2/conf/mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        server_names_hash_bucket_size 64;
+        server {
+          listen 80;
+          access_log /var/vcap/sys/log/nginx/sslip.io-access.log;
+          error_log /var/vcap/sys/log/nginx/sslip.io-error.log;
+        }
+      }
 ```
 
 ### Deploy
 
-### Sample BOSH Manifests
-
-A sample manifest is available in the `examples` subdirectory.
+```bash
+bosh-init deploy ~/nginx-aws.yml
+```
 
 ### HTML content
 
