@@ -71,7 +71,7 @@ export ELASTIC_IP=52.0.76.229 # substitute your VM's elastic IP
 export AWS_KEY_PAIR=~/.ssh/aws_nono.pem # substitute the path to your key pair
 ```
 
-Next, we copy the *document_root* directory onto the VM. The document root
+Next, copy the *document_root* directory onto the VM. The document root
 should have the file index.html (e.g. *document_root/index.html*)
 
 ```bash
@@ -93,15 +93,65 @@ mv /tmp/document_root /var/vcap/jobs/nginx/
 Point your browser to your VM's elastic IP and make sure that the page is the one
 you expect.
 
-### Addendum: BOSH Jobs
+### BOSH Jobs
 
 There are two jobs:
 
-* nginx: runs the nginx server
-* fetcher: periodically fetches [computationally] expensive pages for the nginx
+1. nginx: runs the nginx server
+1. fetcher: periodically fetches [computationally] expensive pages for the nginx
   server to server as static pages. Discussion of this job is beyond the scope
   of this document and it can be safely ignored (i.e. you don't need to instantiate
   the job in the BOSH manifest).
+
+#### 1. nginx Job Properties
+
+* `nginx_conf`: *Required*. This contains the contents of nginx's configuration
+  file, nginx.conf. Here is the beginning from a sample configuration:
+  ```yaml
+    nginx_conf: |
+      worker_processes  1;
+      error_log /var/vcap/sys/log/nginx/error.log   info;
+  ```
+
+* `ssl_key`: *Optional*, defaults to ''. This contains the contents of the
+  SSL key in PEM-encoded format. This is required if deploying an HTTPS webserver.
+  The key is deployed to the path `/var/vcap/jobs/nginx/etc/ssl.key.pem` and
+  requires the following line in the `nginx_conf`'s *server* definition:
+
+  ```
+  ssl_certificate_key /var/vcap/jobs/nginx/etc/ssl.key.pem;
+  ```
+
+  Here is the beginning from a sample configuration:
+
+  ```yaml
+  ssl_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIJKQIBAAKCAgEAyv4in6scMw3OkBlr++1OooLuZQKftmwGIO8puOj6lSH4H1LI
+  ```
+
+* `ssl_chained_cert`: *Optional*, defaults to ''. This contains the contents of the
+  SSL certificate in PEM-encoded format. This file will most likely contain several
+  chained certificates (unless by some miracle your certificate was issued by
+  a root certificate). The certificate for the server should appear at the
+  top of the file, followed by intermediate certificate that issued the server's
+  certificate next.
+  This property is required if deploying an HTTPS webserver.
+  The certificate is deployed to the path `/var/vcap/jobs/nginx/etc/ssl_chained.crt.pem` and
+  requires the following line in the `nginx_conf` *server* definition:
+
+  ```
+  ssl_certificate     /var/vcap/jobs/nginx/etc/ssl_chained.crt.pem;
+  ```
+
+  Here is the beginning from a sample configuration:
+
+
+  ```yaml
+  ssl_chained_cert: |
+    -----BEGIN CERTIFICATE-----
+    MIIGSjCCBTKgAwIBAgIRAOxg+vyhygau6bc2SAooL6owDQYJKoZIhvcNAQELBQAw
+  ```
 
 ### Caveats
 
