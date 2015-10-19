@@ -1,7 +1,0 @@
----
-name: nginx-1.6.2
-
-dependencies:
-
-files:
- - nginx-1.6.2/nginx-1.6.2.tar.gz # from http://nginx.org/download/nginx-1.6.2.tar.gz
