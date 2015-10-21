@@ -35,7 +35,7 @@ jobs:
         worker_connections  1024;
       }
       http {
-        include /var/vcap/packages/nginx-1.6.2/conf/mime.types;
+        include /var/vcap/packages/nginx/conf/mime.types;
         default_type  application/octet-stream;
         sendfile        on;
         keepalive_timeout  65;
