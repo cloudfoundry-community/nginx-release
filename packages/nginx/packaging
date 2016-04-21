@@ -22,6 +22,7 @@ pushd nginx-1.4.5
     --add-module=../headers-more-nginx-module-0.25 \
     --with-http_ssl_module \
     --with-http_dav_module \
+    --with-http_realip_module \
     --add-module=../nginx-upload-module-2.2
 
   make
