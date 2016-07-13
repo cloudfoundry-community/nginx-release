@@ -3,3 +3,19 @@ nginx-1.6.2/nginx-1.6.2.tar.gz:
   object_id: fd83f817-7aed-4821-93cd-32dbe728c65e
   sha: 1a5458bc15acf90eea16353a1dd17285cf97ec35
   size: 804164
+headers-more-nginx-module-0.30.tar.gz:
+  object_id: ba96a8e3-46dc-4f8b-9f65-61f76701efd4
+  sha: a188a399f3e365a0831585a9d7aa0e6ed1a75f0d
+  size: 27793
+nginx-1.11.1.tar.gz:
+  object_id: cb963838-2489-494a-a638-75690db4786e
+  sha: 6b6172b26628b95c4ad0d6cb5b11eb4aa59c2a83
+  size: 913417
+nginx-upload-module-2.2.tar.gz:
+  object_id: ac871043-6bc5-4306-98a8-96c901ce4bca
+  sha: 74ccd116525a155db76f92a1cd484d9516a70398
+  size: 28505
+pcre-8.38.tar.gz:
+  object_id: 106b38ea-b6d7-4368-8526-965075a221b4
+  sha: 3ab418d0026c2a4e693ec783bd60660debc32b8f
+  size: 2053336
