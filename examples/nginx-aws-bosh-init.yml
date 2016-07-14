@@ -22,7 +22,7 @@ jobs:
   resource_pool: nginx_pool
   networks:
   - name: vip
-    # CHANGEME: replace the IP address with your Elastic IP
+    # FIXME: replace the IP address with your Elastic IP
     # the Elastic IP must have scope 'vpc' not 'standard'
     static_ips: [52.0.76.229]
   - name: default
@@ -52,7 +52,7 @@ networks:
 - name: default
   type: dynamic
   cloud_properties:
-    # CHANGEME: replace the subnet with your subnet-id
+    # FIXME: replace the subnet with your subnet-id
     subnet: subnet-1c90ef6b
 - name: vip
   type: vip
@@ -61,32 +61,32 @@ cloud_provider:
   template: {name: cpi, release: bosh-aws-cpi}
 
   ssh_tunnel:
-    # CHANGEME: replace the IP address with your Elastic IP
+    # FIXME: replace the IP address with your Elastic IP
     host: 52.0.76.229
     port: 22
     user: vcap
-    # CHANGEME: replace with the pathname of your downloaded AWS Key Pair
+    # FIXME: replace with the pathname of your downloaded AWS Key Pair
     # (Power users: no passphrase-protection otherwise you'll see a
     # `asn1: structure error: tags don't match` message when deploying
     private_key: /Users/cunnie/.ssh/aws_nono.pem
 
-  # CHANGEME: replace 'dmitriy' with a secure password
+  # FIXME: replace 'dmitriy' with a secure password
   mbus: https://nats:dmitriy@52.0.76.229:6868
 
   properties:
     aws:
-      # CHANGEME: replace with your AWS Access Key
+      # FIXME: replace with your AWS Access Key
       access_key_id: AKIAxxxxxxxxxxxxxxxx
-      # CHANGEME: replace with your AWS Secret
+      # FIXME: replace with your AWS Secret
       secret_access_key: 0+B1XW6xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      # CHANGEME: replace with your AWS Key Pair name
+      # FIXME: replace with your AWS Key Pair name
       default_key_name: aws_nono
-      # CHANGEME: replace with your security group
+      # FIXME: replace with your security group
       # the Security Group MUST have the VPC ID of your VPC (e.g. 'vpc-e4250881')
       default_security_groups: [no-filter-vpc]
       region: us-east-1
 
-    # CHANGEME: replace 'dmitriy' with a secure password
+    # FIXME: replace 'dmitriy' with a secure password
     agent: {mbus: "https://nats:dmitriy@0.0.0.0:6868"}
 
     blobstore:

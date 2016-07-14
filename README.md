@@ -1,97 +1,64 @@
 # BOSH-deployed nginx Server
 
-This BOSH release can be used to deploy an nginx server.
+This BOSH release deploys nginx server.
 
-### Procedure for creating the BOSH manifest
+### 1. Upload release to BOSH Director
 
-Copy a manifest from the examples subdirectory. If you're not using SSL, copy *nginx-aws.yml*. If you're using SSL, copy *nginx-ssl-aws.yml*.
+```
+bosh upload release https://github.com/cloudfoundry-community/nginx-release/releases/download/v3/nginx-3.tgz
+```
+
+### 2. Create BOSH manifest to deploy nginx server
+
+* Use the `nginx.yml` manifest from the `examples/` subdirectory as a template
+* Search for all occurrences of `FIXME` and modify as appropriate
+* You may need to adjust your [cloud config](https://bosh.io/docs/cloud-config.html);
+  `examples/cloud-config-aws.yml` is an AWS-specific *Cloud Config* that
+  corresponds with `nginx.yml`. Merge that with your *Cloud Config*.
+* If you're using [bosh-init](https://bosh.io/docs/using-bosh-init.html)
+  instead of a BOSH Director, use the `nginx-aws-bosh-init.yml` as an
+  example *bosh-init* manifest.
+
+### 3. Deploy
+
+Update your *Cloud Config* and deploy the release:
 
 ```bash
-cp examples/nginx-aws.yml ~
-```
-Edit your BOSH manifest. Search for occurrences of "CHANGEME" and substitute your values as appropriate.
-
-```bash
-vim ~/nginx-aws.yml
+bosh update cloud-config merged-cloud-config.yml
+bosh deployment nginx.yml
+bosh deploy
 ```
 
-While editing, remember to populate the *nginx* job's configuration (i.e. `nginx.conf`). For example,
+### 4. Post-deployment HTML content
 
-```yaml
-jobs:
-- name: nginx
-  properties:
-    nginx_conf: |
-      worker_processes  1;
-      error_log /var/vcap/sys/log/nginx/error.log   info;
-      #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
-      events {
-        worker_connections  1024;
-      }
-      http {
-        include /var/vcap/packages/nginx/conf/mime.types;
-        default_type  application/octet-stream;
-        sendfile        on;
-        keepalive_timeout  65;
-        server_names_hash_bucket_size 64;
-        server {
-          listen 80;
-          access_log /var/vcap/sys/log/nginx/sslip.io-access.log;
-          error_log /var/vcap/sys/log/nginx/sslip.io-error.log;
-        }
-      }
+You must manually add the HTML content *after* successful deployment.
+
+We recommend installing HTML content on the persistent disk, e.g.
+`/var/vcap/store/nginx/document_root/` so that subsequent redeploys
+do not require re-installation of HTML content, i.e. the
+`nginx.conf` should have the following directive:
+
+```
+server {
+  root /var/vcap/store/nginx/www/document_root;
 ```
 
-If you have an existing manifest and you want to add nginx to it, make sure to include the nginx final release tarball:
+In the following example, we use `git` to clone our HTML
+content for our website, sslip.io.
 
-```yaml
-releases:
-  - name: nginx
-    url: https://s3.amazonaws.com//nginx-release/nginx-2.tgz
-    sha1: 667cc1a0f9117bdb4b217ee2b76dc20e61371c02
-```
-
-### Deploy
-
-Deploy the release to AWS:
-
-```bash
-bosh-init deploy ~/nginx-aws.yml
-```
-
-### HTML content
-
-You must manually add the HTML content *after* successful deployment (irritating, we know)
-
-First, set your environment variables. You'll need the elastic IP of the deployed VM
-and the key pair to ssh in. Both these items should be in the BOSH manifest:
-
-```bash
-export ELASTIC_IP=52.0.76.229 # substitute your VM's elastic IP
-export AWS_KEY_PAIR=~/.ssh/aws_nono.pem # substitute the path to your key pair
-```
-
-Next, copy the *document_root* directory onto the VM. The document root
-should have the file index.html (e.g. *document_root/index.html*)
-
-```bash
-# copy the files to the nginx VM's /tmp/ directory
-scp -r -i $AWS_KEY_PAIR document_root vcap@$ELASTIC_IP:/tmp/
-```
-
-We assume that in the BOSH manifest that the nginx.conf specifies
-*/var/vcap/jobs/nginx/document_root* as the root. We move our
-uploaded file into place:
+We ssh into our deployed VM.
 
 ```bash
 # ssh in and become root
 ssh -i $AWS_KEY_PAIR vcap@$ELASTIC_IP
 sudo su - # password is 'c1oudc0w'
-mv /tmp/document_root /var/vcap/jobs/nginx/
+mkdir -p /var/vcap/store/nginx/www/ # create if needed
+git clone https://github.com/cunnie/sslip.io.git /var/vcap/store/nginx/document_root/
 ```
 
-Point your browser to your VM's elastic IP and make sure that the page is the one
-you expect.
+Browse to your VM's elastic IP to ensure that the page loads as expected.
+
+## Notes
 
 ### BOSH Jobs
 
@@ -132,10 +99,9 @@ There are two jobs:
 
 * `ssl_chained_cert`: *Optional*, defaults to ''. This contains the contents of the
   SSL certificate in PEM-encoded format. This file will most likely contain several
-  chained certificates (unless by some miracle your certificate was issued by
-  a root certificate). The certificate for the server should appear at the
-  top of the file, followed by intermediate certificate that issued the server's
-  certificate next.
+  chained certificates.
+  The certificate for the server should appear at the
+  top, followed by the intermediate certificate.
   This property is required if deploying an HTTPS webserver.
   The certificate is deployed to the path `/var/vcap/jobs/nginx/etc/ssl_chained.crt.pem` and
   requires the following line in the `nginx_conf` *server* definition:
@@ -146,7 +112,6 @@ There are two jobs:
 
   Here is the beginning from a sample configuration:
 
-
   ```yaml
   ssl_chained_cert: |
     -----BEGIN CERTIFICATE-----
@@ -156,4 +121,3 @@ There are two jobs:
 ### Caveats
 
 * We've only tested on AWS
-* works with Ubuntu and CentOS stemcell (uses `apt-get` to install PCRE pre-requisite on Ubuntu)
