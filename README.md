@@ -60,16 +60,6 @@ Browse to your VM's elastic IP to ensure that the page loads as expected.
 
 ## Notes
 
-### BOSH Jobs
-
-There are two jobs:
-
-1. nginx: runs the nginx server
-1. fetcher: periodically fetches [computationally] expensive pages for the nginx
-  server to server as static pages. Discussion of this job is beyond the scope
-  of this document and it can be safely ignored (i.e. you don't need to instantiate
-  the job in the BOSH manifest).
-
 #### 1. nginx Job Properties
 
 * `nginx_conf`: *Required*. This contains the contents of nginx's configuration

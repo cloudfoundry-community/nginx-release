@@ -1,5 +1,0 @@
-check process fetcher
-  with pidfile /var/vcap/sys/run/fetcher/fetcher.pid
-  start program "/var/vcap/jobs/fetcher/bin/ctl start"
-  stop program "/var/vcap/jobs/fetcher/bin/ctl stop"
-  group vcap
