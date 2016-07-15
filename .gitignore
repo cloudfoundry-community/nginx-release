@@ -14,4 +14,4 @@ blobs
 #*
 backups/*
 releases/**/*.tgz
-src/nginx/
+src/nginx/*gz
