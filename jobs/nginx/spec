@@ -14,7 +14,7 @@ properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
   pre_start:
-    default: ''
+    default: '#!/bin/bash'
     description: |
       The contents of the pre-start script. This can be used to populate the
       nginx server's document_root, e.g.
