@@ -5,7 +5,7 @@ This BOSH release deploys nginx server.
 ### 1. Upload release to BOSH Director
 
 ```
-bosh upload release https://github.com/cloudfoundry-community/nginx-release/releases/download/v3/nginx-3.tgz
+bosh upload release https://github.com/cloudfoundry-community/nginx-release/releases/download/v4/nginx-4.tgz
 ```
 
 ### 2. Create BOSH manifest to deploy nginx server
