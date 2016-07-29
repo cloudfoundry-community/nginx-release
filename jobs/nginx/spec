@@ -3,16 +3,31 @@ name: nginx
 templates:
     ctl.sh: bin/ctl
     nginx.conf.erb: etc/nginx.conf
+    pre-start.erb: bin/pre-start
     ssl_key.erb: etc/ssl.key.pem
     ssl_chained_cert.erb: etc/ssl_chained.crt.pem
 
 packages:
-#- nginx-1.6.2
 - nginx
 
 properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
+  pre_start:
+    default: ''
+    description: |
+      The contents of the pre-start script. This can be used to populate the
+      nginx server's document_root, e.g.
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/store/nginx
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $(basename $NGINX_DIR)
+          cd $(basename $NGINX_DIR)
+          curl -L https://github.com/cunnie/sslip.io/archive/v1.tar.gz |
+            tar xzf -
+          mv sslip.io-1 $NGINX_DIR
+          chown -R vcap:vcap $NGINX_DIR
+        fi
   ssl_key:
     default: ''
     description: 'The SSL key; can be empty; should be in PEM format'
