@@ -1,0 +1,105 @@
+---
+name: nginx
+
+releases:
+- name: nginx
+  version: latest
+
+stemcells:
+- alias: centos
+  os: centos-7
+  version: latest
+- alias: ubuntu
+  os: ubuntu-trusty
+  version: latest
+
+instance_groups:
+- name: nginx-centos
+  instances: 1
+  vm_type: default
+  stemcell: centos
+  networks:
+  - name: default
+  jobs:
+  - name: nginx
+    release: nginx
+    properties:
+      nginx_conf: |
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+        #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
+        events {
+          worker_connections  1024;
+        }
+        http {
+          include /var/vcap/packages/nginx/conf/mime.types;
+          default_type  application/octet-stream;
+          sendfile        on;
+          ssi on;
+          keepalive_timeout  65;
+          server_names_hash_bucket_size 64;
+          server {
+            server_name _; # invalid value which will never trigger on a real hostname.
+            listen [::]:80 ipv6only=off;
+            access_log /var/vcap/sys/log/nginx/toto-access.log;
+            error_log /var/vcap/sys/log/nginx/toto-error.log;
+          }
+          root /var/vcap/store/nginx;
+          index index.shtml index.html index.htm;
+        }
+      pre_start: |
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/store/nginx
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $NGINX_DIR
+          cd $NGINX_DIR
+          echo  '<html><title>hello</title><body><h1>Hello <!--#echo var="REMOTE_ADDR" --></h1></body></html>' > index.shtml
+        fi
+- name: nginx-ubuntu
+  instances: 1
+  vm_type: default
+  stemcell: ubuntu
+  networks:
+  - name: default
+  jobs:
+  - name: nginx
+    release: nginx
+    properties:
+      nginx_conf: |
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+        #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
+        events {
+          worker_connections  1024;
+        }
+        http {
+          include /var/vcap/packages/nginx/conf/mime.types;
+          default_type  application/octet-stream;
+          sendfile        on;
+          ssi on;
+          keepalive_timeout  65;
+          server_names_hash_bucket_size 64;
+          server {
+            server_name _; # invalid value which will never trigger on a real hostname.
+            listen [::]:80 ipv6only=off;
+            access_log /var/vcap/sys/log/nginx/toto-access.log;
+            error_log /var/vcap/sys/log/nginx/toto-error.log;
+          }
+          root /var/vcap/store/nginx;
+          index index.shtml index.html index.htm;
+        }
+      pre_start: |
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/store/nginx
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $NGINX_DIR
+          cd $NGINX_DIR
+          echo  '<html><title>hello</title><body><h1>Hello <!--#echo var="REMOTE_ADDR" --></h1></body></html>' > index.shtml
+        fi
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
