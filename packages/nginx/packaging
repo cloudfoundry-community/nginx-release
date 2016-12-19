@@ -6,16 +6,14 @@ tar xzvf nginx/pcre-8.38.tar.gz
 echo "Extracting headers-more module..."
 tar xzvf nginx/headers-more-nginx-module-0.30.tar.gz
 
-echo "Extracting nginx_upload module..."
-tar xzvf nginx/nginx-upload-module-2.2.tar.gz
-
 echo "Extracting nginx..."
-tar xzvf nginx/nginx-1.11.1.tar.gz
+tar xzvf nginx/nginx-1.11.7.tar.gz
 
 echo "Building nginx..."
 
-pushd nginx-1.11.1
+pushd nginx-1.11.7
   ./configure \
+    --with-ipv6 \
     --with-debug \
     --prefix=${BOSH_INSTALL_TARGET} \
     --with-pcre=../pcre-8.38 \
@@ -23,7 +21,8 @@ pushd nginx-1.11.1
     --with-http_ssl_module \
     --with-http_dav_module \
     --with-http_realip_module \
-    --add-module=../nginx-upload-module-2.2
+    --with-http_gunzip_module \
+    --with-http_v2_module
 
   make
   make install
