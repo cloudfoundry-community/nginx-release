@@ -22,7 +22,8 @@ pushd nginx-1.11.7
     --with-http_dav_module \
     --with-http_realip_module \
     --with-http_gunzip_module \
-    --with-http_v2_module
+    --with-http_v2_module \
+    --with-stream
 
   make
   make install
