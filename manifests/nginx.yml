@@ -3,26 +3,18 @@ name: nginx
 
 director_uuid: beb2169f-8911-453f-98ed-978adcb168c2 # FIXME you put Director's UUID
 
-releases:
-- name: nginx
-  version: latest
-
-stemcells:
-- alias: centos
-  os: centos-7
-  version: latest
 
 instance_groups:
 - name: nginx
   instances: 1
-  vm_type: t2.micro.100G
+  vm_type: t2.micro
   persistent_disk_type: nginx
   stemcell: centos
   networks:
   - name: vip
     # FIXME: replace the IP address with your Elastic IP
     # the Elastic IP must have scope 'vpc' not 'standard'
-    static_ips: [ 52.23.10.10 ] # FIXME replace wiuth your public IP
+    static_ips: [ 52.23.10.10 ] # FIXME replace with your public IP
   - name: dynamic
     default: [ dns, gateway ]
   jobs:
@@ -32,6 +24,7 @@ instance_groups:
       nginx_conf: |
         worker_processes  1;
         error_log /var/vcap/sys/log/nginx/error.log   info;
+        #pid        logs/nginx.pid; # PIDFILE is configured via monit's ctl
         events {
           worker_connections  1024;
         }
@@ -66,6 +59,17 @@ instance_groups:
             index index.shtml index.html index.htm;
           }
         }
+      pre_start: |
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/store/nginx
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $(basename $NGINX_DIR)
+          cd $(basename $NGINX_DIR)
+          curl -L https://github.com/cunnie/sslip.io/archive/v1.tar.gz |
+            tar xzf -
+          mv sslip.io-1 $NGINX_DIR
+          chown -R vcap:vcap $NGINX_DIR
+        fi
       # FIXME: replace with your HTTPS SSL key
       ssl_key: |
         -----BEGIN RSA PRIVATE KEY-----
@@ -90,6 +94,14 @@ instance_groups:
 update:
   canaries: 1
   max_in_flight: 1
-  serial: false
   canary_watch_time: 1000-60000
   update_watch_time: 1000-60000
+
+stemcells:
+- alias: centos
+  os: centos-7
+  version: latest
+
+releases:
+- name: nginx
+  version: latest
