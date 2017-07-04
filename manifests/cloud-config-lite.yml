@@ -1,0 +1,29 @@
+vm_types:
+- name: default
+  cloud_properties:
+    ephemeral_disk:
+      cpu: 1
+      ram: 1024
+      disk: 15_360
+- name: compilation
+  cloud_properties:
+    ephemeral_disk:
+      cpu: 2
+      ram: 4096
+      disk: 15_360
+
+disk_types:
+- name: default
+  disk_size: 4096
+
+networks:
+- name: default
+  subnets:
+  - reserved: [10.244.0.1]
+    range: 10.244.0.0/24
+
+compilation:
+  workers: 1
+  network: default
+  reuse_compilation_vms: true
+  vm_type: compilation

@@ -2,10 +2,10 @@ nginx/headers-more-nginx-module-0.30.tar.gz:
   size: 27793
   object_id: ba96a8e3-46dc-4f8b-9f65-61f76701efd4
   sha: a188a399f3e365a0831585a9d7aa0e6ed1a75f0d
-nginx/nginx-1.11.7.tar.gz:
-  size: 962302
-  object_id: 56ff98e5-0fdb-497a-55b4-bb17425f8de2
-  sha: 6a0efd3ba54721620e775820c0505a95e99863cd
+nginx/nginx-1.12.0.tar.gz:
+  size: 980831
+  object_id: fe22fec4-99b4-481f-5112-4f979746157a
+  sha: 40733c030d0096fe56513c0a4da65c682ca0a18b
 nginx/pcre-8.38.tar.gz:
   size: 2053336
   object_id: 106b38ea-b6d7-4368-8526-965075a221b4

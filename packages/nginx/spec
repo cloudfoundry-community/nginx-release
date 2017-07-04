@@ -1,6 +1,6 @@
 ---
 name: nginx
 files:
-- nginx/nginx-1.11.7.tar.gz
+- nginx/nginx-1.12.0.tar.gz
 - nginx/headers-more-nginx-module-0.30.tar.gz
 - nginx/pcre-8.38.tar.gz

@@ -7,11 +7,11 @@ echo "Extracting headers-more module..."
 tar xzvf nginx/headers-more-nginx-module-0.30.tar.gz
 
 echo "Extracting nginx..."
-tar xzvf nginx/nginx-1.11.7.tar.gz
+tar xzvf nginx/nginx-1.12.0.tar.gz
 
 echo "Building nginx..."
 
-pushd nginx-1.11.7
+pushd nginx-1.12.0
   ./configure \
     --with-ipv6 \
     --with-debug \
