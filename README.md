@@ -1,37 +1,75 @@
 # BOSH-deployed nginx Server
 
-This BOSH release deploys nginx server.
+This [BOSH](https://bosh.io/) release deploys an nginx webserver.
 
-### 1. Upload release to BOSH Director
+### 0. Quick Start
 
-```
-bosh upload release https://github.com/cloudfoundry-community/nginx-release/releases/download/v4/nginx-4.tgz
-```
+#### 0.0 Quick Start: Pre-requisites
 
-### 2. Create BOSH manifest to deploy nginx server
+You must have a BOSH Director and have uploaded stemcells to it. Our examples assume the [BOSH CLI v2](https://github.com/cloudfoundry/bosh-cli).
 
-* Use the `nginx.yml` manifest from the `examples/` subdirectory as a template
-* Search for all occurrences of `FIXME` and modify as appropriate
-* You may need to adjust your [cloud config](https://bosh.io/docs/cloud-config.html);
-  `examples/cloud-config-aws.yml` is an AWS-specific *Cloud Config* that
-  corresponds with `nginx.yml`. Merge that with your *Cloud Config*.
-* If you're using [bosh-init](https://bosh.io/docs/using-bosh-init.html)
-  instead of a BOSH Director, use the `nginx-aws-bosh-init.yml` as an
-  example *bosh-init* manifest.
-
-### 3. Deploy
-
-Update your *Cloud Config* and deploy the release:
+Here's a quick-start to install [BOSH Lite](https://github.com/cloudfoundry/bosh-lite):
 
 ```bash
-bosh update cloud-config merged-cloud-config.yml
-bosh deployment nginx.yml
-bosh deploy
+mkdir ~/workspace
+cd ~/workspace
+git clone https://github.com/cloudfoundry/bosh-lite.git
+cd bosh-lite
+vagrant up # you have installed Vagrant, haven't you?
+bosh2 -e 192.168.50.4 alias-env lite --ca-cert=ca/certs/ca.crt
+bosh2 -e lite login # admin/admin
 ```
 
-### 4. Post-deployment HTML content
+Upload Ubuntu stemcell
 
-You must manually add the HTML content *after* successful deployment.
+```bash
+bosh2 -e lite us https://s3.amazonaws.com/bosh-core-stemcells/warden/bosh-stemcell-3421.11-warden-boshlite-ubuntu-trusty-go_agent.tgz
+```
+
+Add the route
+
+```bash
+bin/add-route
+```
+
+Clone the nginx repository; upload the Cloud Config:
+
+```bash
+cd ~/workspace
+git clone https://github.com/cloudfoundry-community/nginx-release.git
+cd nginx-release
+bosh2 -e lite ucc manifests/cloud-config-lite.yml
+```
+
+#### 0.1 Quick Start: Upload release to BOSH Director
+
+```bash
+bosh2 -e lite ur https://github.com/cloudfoundry-community/nginx-release/releases/download/v1.12.0/nginx-1.12.0.tgz
+```
+
+#### 0.2 Quick Start: deploy
+
+(This assumes you're in the `~/workspace/nginx` directory cloned in a previous step):
+
+```bash
+bosh2 -e lite -d nginx deploy manifests/nginx-lite.yml
+```
+
+#### 0.3 Quick Start: test
+
+Browse to <http://10.244.0.10/>; you should see the following:
+
+![nginx_release_welcome](https://user-images.githubusercontent.com/1020675/27837760-14599acc-609b-11e7-8e1a-eb4d305be2b7.png)
+
+### 1. Post-deployment HTML content
+
+
+
+We find it effective to set the `pre_start` property to populate
+the webserver content. See [here](https://bosh.io/docs/pre-start.html)
+for an example (sslip.io).
+
+Alternatively, you may manually add the HTML content *after* successful deployment.
 
 We recommend installing HTML content on the persistent disk, e.g.
 `/var/vcap/store/nginx/document_root/` so that subsequent redeploys
@@ -42,21 +80,6 @@ do not require re-installation of HTML content, i.e. the
 server {
   root /var/vcap/store/nginx/www/document_root;
 ```
-
-In the following example, we use `git` to clone our HTML
-content for our website, sslip.io.
-
-We ssh into our deployed VM.
-
-```bash
-# ssh in and become root
-ssh -i $AWS_KEY_PAIR vcap@$ELASTIC_IP
-sudo su - # password is 'c1oudc0w'
-mkdir -p /var/vcap/store/nginx/www/ # create if needed
-git clone https://github.com/cunnie/sslip.io.git /var/vcap/store/nginx/document_root/
-```
-
-Browse to your VM's elastic IP to ensure that the page loads as expected.
 
 ## Notes
 
@@ -108,6 +131,5 @@ Browse to your VM's elastic IP to ensure that the page loads as expected.
     MIIGSjCCBTKgAwIBAgIRAOxg+vyhygau6bc2SAooL6owDQYJKoZIhvcNAQELBQAw
   ```
 
-### Caveats
-
-* We've only tested on AWS
+* `pre_start`: *Optional*, contains a pre-start script to execute,
+useful for populating web content.

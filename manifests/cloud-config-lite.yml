@@ -18,8 +18,10 @@ disk_types:
 
 networks:
 - name: default
+  type: manual
   subnets:
   - reserved: [10.244.0.1]
+    static: [10.244.0.10]
     range: 10.244.0.0/24
 
 compilation:
