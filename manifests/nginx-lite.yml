@@ -6,9 +6,7 @@ releases:
   version: latest
 
 stemcells:
-- alias: centos
-  os: centos-7
-  version: latest
+# Centos 3421.11 _appears_ not to work under BOSH Lite
 - alias: ubuntu
   os: ubuntu-trusty
   version: latest
