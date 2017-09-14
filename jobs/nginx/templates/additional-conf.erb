@@ -1,0 +1,13 @@
+This file exists purely to allow an arbitrary number of
+additional configuration files to be placed on the filesystem,
+as Bosh has no mechanism for templating a list of files.
+
+<%
+  require 'fileutils'
+  for @conf in p('additional_conf')
+    conf_dir = "/var/vcap/data/jobs/nginx"
+    FileUtils.mkdir_p(conf_dir)
+    file_path = "#{conf_dir}/#{@conf["file_name"]}"
+    File.open(file_path, 'w') { |file| file.write(@conf["content"]) }
+  end
+%>
