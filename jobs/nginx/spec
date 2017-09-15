@@ -2,8 +2,11 @@
 name: nginx
 templates:
     ctl.sh: bin/ctl
-    nginx.conf.erb: etc/nginx.conf
+    nginx-default.conf.erb: etc/nginx-default.conf
+    nginx-modified.conf.erb: etc/nginx-modified.conf
     pre-start.erb: bin/pre-start
+    post-start.erb: bin/post-start
+    drain.erb: bin/drain
     ssl_key.erb: etc/ssl.key.pem
     ssl_chained_cert.erb: etc/ssl_chained.crt.pem
 
@@ -13,8 +16,9 @@ packages:
 properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
+  nginx-modified_conf:
+    description: 'The contents of nginx.conf, with the healthchecks enabled'
   pre_start:
-    default: '#!/bin/bash'
     description: |
       The contents of the pre-start script. This can be used to populate the
       nginx server's document_root, e.g.
@@ -28,6 +32,23 @@ properties:
           mv sslip.io-1 $NGINX_DIR
           chown -R vcap:vcap $NGINX_DIR
         fi
+  post_start:
+    default: '#!/bin/bash'
+    description: |
+      The contents of the post-start script. This can be used to change the
+      nginx server config, e.g.
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/store/nginx
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $(basename $NGINX_DIR)
+          cd $(basename $NGINX_DIR)
+          curl -L https://github.com/cunnie/sslip.io/archive/v1.tar.gz |
+            tar xzf -
+          mv sslip.io-1 $NGINX_DIR
+          chown -R vcap:vcap $NGINX_DIR
+        fi
+  drain_script:
+    description: 'actions to take on stopping the nginx deamon'
   ssl_key:
     default: ''
     description: 'The SSL key; can be empty; should be in PEM format'
