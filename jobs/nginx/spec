@@ -19,11 +19,6 @@ properties:
   nginx-modified_conf:
     description: 'The contents of nginx.conf, with the healthchecks enabled'
   pre_start:
-    default: '#!/bin/bash
-    CONFIG_DIR=/var/vcap/jobs/nginx/etc
-    if [ ! -f $CONFIG_DIR/nginx.conf ]; then
-       ln - s $CONFIG_DIR/nginx-default.conf $CONFIG_DIR/nginx.conf
-    fi'
     description: |
       The contents of the pre-start script. This can be used to populate the
       nginx server's document_root, e.g.
