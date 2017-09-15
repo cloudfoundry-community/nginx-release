@@ -6,6 +6,7 @@ templates:
     pre-start.erb: bin/pre-start
     ssl_key.erb: etc/ssl.key.pem
     ssl_chained_cert.erb: etc/ssl_chained.crt.pem
+    additional-conf.erb: etc/additional-conf.txt
 
 packages:
 - nginx
@@ -13,6 +14,17 @@ packages:
 properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
+  additional_conf:
+    description: |
+      A list of objects describing additional configuration files to be placed on the filesystem.
+    example:
+      - file_name: add-healthcheck.conf
+        content: |
+          http {
+            server {
+              # some configuration
+            }
+          }
   pre_start:
     default: '#!/bin/bash'
     description: |
