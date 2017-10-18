@@ -14,12 +14,13 @@ stemcells:
 instance_groups:
 - name: nginx
   instances: 1
+  azs: [ z1 ]
   vm_type: default
   persistent_disk_type: default
   stemcell: ubuntu
   networks:
   - name: default
-    static_ips: [ 10.244.0.10 ]
+    static_ips: [ 10.244.0.34 ]
   jobs:
   - name: nginx
     release: nginx
@@ -38,7 +39,7 @@ instance_groups:
           server_names_hash_bucket_size 64;
           server {
             server_name _; # invalid value which will never trigger on a real hostname.
-            listen [::]:80 ipv6only=off; # both IPv4 & IPv6
+            listen *:80;
             # FIXME: replace all occurrences of 'example.com' with your server's FQDN
             access_log /var/vcap/sys/log/nginx/example.com-access.log;
             error_log /var/vcap/sys/log/nginx/example.com-error.log;
