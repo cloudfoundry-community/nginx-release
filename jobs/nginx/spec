@@ -43,3 +43,8 @@ properties:
       "COMODO RSA Certification Authority").  There is no reason to include the
       root certificate, but there is no harm in including it either. It should
       be the last certificate (bottom-most).
+  htpasswd_users:
+    description: List of users and paswords to add in a generated htpasswd file
+    example:
+      - name: marissa
+        password: koala
