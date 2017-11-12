@@ -1,0 +1,116 @@
+#
+# Example nginx configuration to act as reverse proxy of an existing
+# service and add basic authentication on it.
+#
+# This example covers:
+# - Generation of an htpasswd file from a login and password
+# - Use of bosh2 variables to feed SSL properties
+#
+---
+name: nginx
+
+releases:
+- name: nginx
+  version: latest
+
+instance_groups:
+- name: nginx
+  instances: 1
+  azs: [ z1 ]
+  vm_type: default
+  persistent_disk_type: 1GB
+  stemcell: ubuntu
+  networks:
+  - name: default
+  jobs:
+  - name: nginx
+    release: nginx
+    properties:
+      pre_start: |
+        #!/bin/bash
+        JOB_NAME=nginx
+        BASE_DIR=/var/vcap
+        JOB_DIR=$BASE_DIR/jobs/$JOB_NAME
+        CONFIG_DIR=$JOB_DIR/etc
+
+        USER=admin
+        PASS="((nginx_basic_auth_password))"
+
+        echo "${USER}:$(echo "${PASS}" | openssl passwd -apr1 -stdin)" > ${CONFIG_DIR}/htpasswd.conf
+
+      ssl_key: ((nginx.private_key))
+      ssl_chained_cert: ((nginx.certificate))
+      nginx_conf: |
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+        events {
+          worker_connections  1024;
+        }
+        http {
+          server_tokens off;
+          server {
+            listen 80;
+            return 301 https://$host$request_uri;
+          }
+          server {
+            listen 443 default_server ssl;
+
+            ssl_certificate     /var/vcap/jobs/nginx/etc/ssl_chained.crt.pem;
+            ssl_certificate_key /var/vcap/jobs/nginx/etc/ssl.key.pem;
+            ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+            ssl_ciphers         HIGH:!aNULL:!MD5;
+
+            set $upstream 10.244.0.34;
+
+            location / {
+              proxy_pass_request_headers on;
+              proxy_pass http://$upstream;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header Host $host;
+
+              proxy_http_version 1.1;
+              proxy_set_header Connection "";
+              proxy_buffering off;
+              client_max_body_size 0;
+              proxy_read_timeout 36000s;
+              proxy_redirect off;
+            }
+
+            auth_basic           "Alto, santo y senha!";
+            auth_basic_user_file /var/vcap/jobs/nginx/etc/htpasswd.conf;
+          }
+        }
+
+stemcells:
+- alias: ubuntu
+  os: ubuntu-trusty
+  version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000
+
+variables:
+- name: nginx_basic_auth_password
+  type: password
+
+- name: nginx_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: routerCA
+
+- name: nginx
+  type: certificate
+  options:
+    ca: nginx_ca
+    common_name: routerSSL
+    alternative_names:
+    - "((system_domain))"
+    - "*.((system_domain))"
+
+
