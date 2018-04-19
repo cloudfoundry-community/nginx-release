@@ -41,6 +41,7 @@ instance_groups:
       ssl_key: ((nginx.private_key))
       ssl_chained_cert: ((nginx.certificate))
       nginx_conf: |
+        user nobody vcap; # group vcap can read /var/vcap/jobs
         worker_processes  1;
         error_log /var/vcap/sys/log/nginx/error.log   info;
         events {
@@ -112,5 +113,3 @@ variables:
     alternative_names:
     - "((system_domain))"
     - "*.((system_domain))"
-
-

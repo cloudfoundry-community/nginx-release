@@ -26,6 +26,7 @@ instance_groups:
     release: nginx
     properties:
       nginx_conf: |
+        user nobody vcap; # group vcap can read most directories
         worker_processes  1;
         error_log /var/vcap/sys/log/nginx/error.log   info;
         events {

@@ -2,6 +2,15 @@
 
 This [BOSH](https://bosh.io/) release deploys an nginx webserver.
 
+***Warning: You may receive HTTP 403 Status ("forbidden") or see  "permission
+denied" errors in your logs when using stemcells >= 3541.x; to fix, set the
+worker's UNIX group to `vcap` at the top of your `nginx_conf` property with the
+following line:***
+
+```
+user nobody vcap; # group vcap can read most directories
+```
+
 ### 0. Quick Start
 
 #### 0.0 Quick Start: Pre-requisites
