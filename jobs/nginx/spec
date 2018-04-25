@@ -20,8 +20,10 @@ properties:
   nginx_conf:
     description: 'The contents of nginx.conf, the primary configuration file'
   drain:
-    default: '#!/bin/bash'
-    description: 'A placeholder to add custom drain scipt'  
+    default: |
+      #!/bin/bash
+      echo 0
+    description: 'A placeholder to add a custom drain script'
   pre_start:
     default: '#!/bin/bash'
     description: |
@@ -39,10 +41,12 @@ properties:
         fi
   post_start:
     default: '#!/bin/bash'
-    description: 'A placeholder to to run steps after nginx has started'  
+    description: 'A placeholder to to run steps after nginx has started'
   ssl_key:
     default: ''
-    description: 'The SSL key; can be empty; should be in PEM format'
+    description: |
+      The SSL key, can be empty, should be in PEM format. Its location is
+      /var/vcap/jobs/nginx/etc/ssl.key.pem
   ssl_chained_cert:
     default: ''
     description: |
@@ -54,4 +58,5 @@ properties:
       there is another intermediate certificate, that should follow (e.g.
       "COMODO RSA Certification Authority").  There is no reason to include the
       root certificate, but there is no harm in including it either. It should
-      be the last certificate (bottom-most).
+      be the last certificate (bottom-most). Its location is
+      /var/vcap/jobs/nginx/etc/ssl_chained.crt.pem
