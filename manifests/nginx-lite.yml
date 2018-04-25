@@ -36,6 +36,7 @@ instance_groups:
           include /var/vcap/packages/nginx/conf/mime.types;
           default_type  application/octet-stream;
           sendfile        on;
+          ssi on;
           keepalive_timeout  65;
           server_names_hash_bucket_size 64;
           server {
@@ -44,9 +45,27 @@ instance_groups:
             # FIXME: replace all occurrences of 'example.com' with your server's FQDN
             access_log /var/vcap/sys/log/nginx/example.com-access.log;
             error_log /var/vcap/sys/log/nginx/example.com-error.log;
+            root /var/vcap/data/nginx/document_root;
+            index index.shtml;
           }
         }
-
+      pre_start: |
+        #!/bin/bash -ex
+        NGINX_DIR=/var/vcap/data/nginx/document_root
+        if [ ! -d $NGINX_DIR ]; then
+          mkdir -p $NGINX_DIR
+          cd $NGINX_DIR
+          cat > index.shtml <<EOF
+            <html><head><title>BOSH on IPv6</title>
+            </head><body>
+            <h2>Welcome to BOSH's nginx Release</h2>
+            <h2>
+            My hostname/IP: <b><!--# echo var="HTTP_HOST" --></b><br />
+            Your IP: <b><!--# echo var="REMOTE_ADDR" --></b>
+            </h2>
+            </body></html>
+        EOF
+        fi
 update:
   canaries: 1
   max_in_flight: 1
