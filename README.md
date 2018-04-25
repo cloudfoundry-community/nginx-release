@@ -37,7 +37,7 @@ cd nginx-release
 #### 0.1 Quick Start: Upload release to BOSH Director
 
 ```bash
-bosh -e vbox ur https://github.com/cloudfoundry-community/nginx-release/releases/download/v1.13.12/nginx-release-1.13.12.tgz
+bosh -e vbox ur https://github.com/cloudfoundry-community/nginx-release/releases/download/1.13.12/nginx-release-1.13.12.tgz
 ```
 
 #### 0.2 Quick Start: deploy
