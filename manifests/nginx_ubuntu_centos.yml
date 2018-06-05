@@ -4,6 +4,8 @@ name: nginx
 releases:
 - name: nginx
   version: latest
+- name: bpm
+  version: latest
 
 stemcells:
 - alias: centos

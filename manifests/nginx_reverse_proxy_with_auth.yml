@@ -12,6 +12,8 @@ name: nginx
 releases:
 - name: nginx
   version: latest
+- name: bpm
+  version: latest
 
 instance_groups:
 - name: nginx

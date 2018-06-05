@@ -4,6 +4,9 @@ name: nginx
 releases:
 - name: nginx
   version: latest
+- name: bpm
+  version: latest
+
 
 stemcells:
 # Centos 3421.11 _appears_ not to work under BOSH Lite
