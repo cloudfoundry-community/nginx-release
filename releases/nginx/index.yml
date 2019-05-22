@@ -11,4 +11,6 @@ builds:
     version: 1.12.2
   da5aeb45-c7f1-4a64-7488-c685f6b4b882:
     version: 1.13.12
+  f1f21188-2bf2-4963-4d0b-8d6148de0b7a:
+    version: 1.17.0
 format-version: "2"

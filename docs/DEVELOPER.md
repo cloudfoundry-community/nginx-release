@@ -1,10 +1,10 @@
 ## Developer Notes
 
-Bumping version (e.g. to 1.13.12):
+Bumping version (e.g. to 1.17.0). Download latest _mainline_ release.
 
 ```
-export OLD_VERSION=1.12.2
-export VERSION=1.13.12
+export OLD_VERSION=1.13.12
+export VERSION=1.17.0
 cd ~/workspace/nginx-release
 git pull -r
 find packages/nginx -type f -print0 |
@@ -17,10 +17,14 @@ bosh add-blob \
 vim config/blobs.yml
   # delete `nginx/nginx-${OLD_VERSION}.tar.gz` stanza
 bosh create-release --force
-bosh -e vbox upload-release
-bosh -e vbox -n -d nginx \
+export BOSH_ENVIRONMENT=vbox
+bosh upload-release
+bosh -n -d nginx \
   deploy manifests/nginx-lite.yml --recreate
  # `bosh -e vbox vms`; browse to nginx VM
+bosh -d nginx ssh
+curl -I localhost # check for `HTTP/1.1 200 OK`
+exit
 bosh upload-blobs
 bosh create-release \
   --final \

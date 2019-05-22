@@ -14,13 +14,12 @@ stemcells:
 instance_groups:
 - name: nginx
   instances: 1
-  azs: [ z1 ]
-  vm_type: default
+  azs: [ vsphere ]
+  vm_type: small
   persistent_disk_type: default
   stemcell: ubuntu
   networks:
-  - name: default
-    static_ips: [ 10.244.0.34 ]
+  - name: vsphere-guest
   jobs:
   - name: nginx
     release: nginx
