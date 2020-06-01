@@ -1,6 +1,6 @@
 ---
+name: nginx
 blobstore:
-  provider: s3
+  provider: gcs
   options:
     bucket_name: nginx-release
-final_name: nginx

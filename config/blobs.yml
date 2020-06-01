@@ -1,20 +1,20 @@
 nginx/headers-more-nginx-module-0.30.tar.gz:
   size: 27793
-  object_id: 3eba8c40-b5d6-412d-6726-29129f517b48
+  object_id: 82f42f21-59fc-408a-4fa1-911b3ee8d3af
   sha: a188a399f3e365a0831585a9d7aa0e6ed1a75f0d
-nginx/nginx-1.17.0.tar.gz:
-  size: 1032978
-  object_id: 2324933b-8a78-4831-42f5-7bcf039174ff
-  sha: sha256:e21b5d06cd53e86afb94f0b3678e0abb0c0f011433471fa3d895cefa65ae0fab
+nginx/nginx-1.19.0.tar.gz:
+  size: 1043748
+  object_id: 8ead9536-907c-4a96-629a-f741ef4c15f0
+  sha: sha256:44a616171fcd7d7ad7c6af3e6f3ad0879b54db5a5d21be874cd458b5691e36c8
 nginx/nginx-upload-module-2.2.tar.gz:
   size: 28505
-  object_id: f5650638-2a55-4602-424d-1b1e6e2d1e8f
+  object_id: 9473003d-70c2-422a-6e20-ead63557d1cb
   sha: 74ccd116525a155db76f92a1cd484d9516a70398
 nginx/pcre-8.40.tar.gz:
   size: 2065161
-  object_id: 3c5c62a0-dfdc-46ca-7279-d80161300987
+  object_id: f46b6a3a-8901-46bb-4f67-8001c89eaf48
   sha: 10384eb3d411794cc15f55b9d837d3f69e35391e
 patches/nginx-upload-module.patch:
   size: 657
-  object_id: 27c1b860-1fcf-418a-7342-fca9ac3576c6
+  object_id: aaf1d733-e923-4f96-7182-5a6df52abdba
   sha: b8733bdb3f0c55a821add0476fb2b477a5a42634
