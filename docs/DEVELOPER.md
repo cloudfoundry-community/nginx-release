@@ -37,3 +37,5 @@ git tag $VERSION
 git push
 git push --tags
 ```
+
+Then draft a new release on GitHub: <https://github.com/cloudfoundry-community/nginx-release/releases>
