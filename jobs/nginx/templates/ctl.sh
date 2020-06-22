@@ -16,7 +16,9 @@ mkdir -p $RUN_DIR $LOG_DIR $CONFIG_DIR
 case $1 in
 
   start)
-    $BASE_DIR/packages/nginx/sbin/$JOB_NAME -g "pid $PIDFILE;" -c $CONFIG_FILE
+    $BASE_DIR/packages/nginx/sbin/$JOB_NAME -g "pid $PIDFILE;" -c $CONFIG_FILE \
+      >>${LOG_DIR}/stdout.log \
+      2>>${LOG_DIR}/stderr.log
     ;;
   stop)
     kill $(cat $PIDFILE)
