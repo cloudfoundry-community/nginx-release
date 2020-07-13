@@ -1,10 +1,10 @@
 ## Developer Notes
 
-Bumping version (e.g. to 1.19.0). Download latest _mainline_ release.
+Bumping version (e.g. to 1.19.1). Download latest _mainline_ release.
 
 ```
-export OLD_VERSION=1.17.0
-export VERSION=1.19.0
+export OLD_VERSION=1.19.0
+export VERSION=1.19.1
 cd ~/workspace/nginx-release
 git pull -r
 find packages/nginx -type f -print0 |
