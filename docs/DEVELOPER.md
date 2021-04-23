@@ -3,8 +3,8 @@
 Bumping version (e.g. to 1.19.1). Download latest _mainline_ release.
 
 ```
-export OLD_VERSION=1.19.0
-export VERSION=1.19.1
+export OLD_VERSION=1.19.1
+export VERSION=1.19.10
 cd ~/workspace/nginx-release
 git pull -r
 find packages/nginx -type f -print0 |

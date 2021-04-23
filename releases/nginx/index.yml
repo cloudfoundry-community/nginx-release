@@ -3,6 +3,8 @@ builds:
     version: 1.12.0
   27fbd9d9-d5c7-4aa5-5556-a8685b5c0559:
     version: 1.19.1
+  498f91c9-f262-4ff0-4b93-f3675f23c356:
+    version: 1.19.10
   52cd91d7-ebb4-48df-6d71-7b8cdd8ec1ad:
     version: 1.11.7
   6d9b2dbe-b7de-4f56-9f7d-277c391bde5e:
